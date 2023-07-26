@@ -7,15 +7,15 @@ from datetime import datetime
 
 class UrlHandler(ABC):
     @abstractmethod
-    def get_url(self):
+    def get_url(self) -> str:
         pass
 
     @abstractmethod
-    def get_bbox_url(self):
+    def get_bbox_url(self) -> List[str]:
         pass
 
     @abstractmethod
-    def build_url(self):
+    def build_url(self) -> List[str]:
         pass
 
 

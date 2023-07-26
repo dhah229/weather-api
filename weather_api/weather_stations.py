@@ -1,6 +1,6 @@
 from datetime import datetime
 import pandas as pd
-from typing import Union, Optional, Tuple
+from typing import Union, Optional, Dict
 import xarray as xr
 from .utils.dataframe import WeatherStationsDataframe
 from .utils.url_handler import WeatherStationsUrlHandler
@@ -45,7 +45,7 @@ class WeatherStations:
             self.last_date,
         )
 
-    def to_dict_frame(self) -> Union[pd.DataFrame, dict]:
+    def to_dict_frame(self) -> Dict[str, pd.DataFrame]:
         wsdf = WeatherStationsDataframe(self.url)
         dict_frame = wsdf.to_dict_frame()
         return dict_frame
