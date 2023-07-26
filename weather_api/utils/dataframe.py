@@ -22,7 +22,8 @@ class WeatherStationsDataframe(DataframeHandler):
     def __init__(self, paths: List[str]):
         self.paths = paths
 
-    def to_df(self, path: str):
+    @staticmethod
+    def to_df(path: str):
         df = pd.read_csv(
             path, dtype=WeatherStationsDataTypes.dtypes, parse_dates=["LOCAL_DATE"]
         )
