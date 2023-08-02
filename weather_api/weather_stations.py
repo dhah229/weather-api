@@ -38,9 +38,9 @@ class WeatherStations:
         if end_date is None:
             end_date = datetime.now()
             self.end_date = end_date.replace(hour=0, minute=0, second=0)
-        self.url = self._get_url()
+        self.url = self.get_url()
 
-    def _get_url(self) -> str:
+    def get_url(self) -> str:
         url_handler = WeatherStationsUrlHandler(self.start_date, self.end_date)
         url = url_handler.build_url(
             self.stn_id,
