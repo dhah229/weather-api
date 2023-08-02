@@ -4,6 +4,7 @@ from typing import Union, Optional, Dict
 import xarray as xr
 from .utils.dataframe import WeatherStationsDataframe
 from .utils.url_handler import WeatherStationsUrlHandler
+from .utils.xarray import WeatherStationsXArray
 
 """
 https://api.weather.gc.ca/
@@ -37,60 +38,25 @@ class WeatherStations:
         if end_date is None:
             end_date = datetime.now()
             self.end_date = end_date.replace(hour=0, minute=0, second=0)
+        self.url = self._get_url()
+
+    def _get_url(self) -> str:
         url_handler = WeatherStationsUrlHandler(self.start_date, self.end_date)
-        self.url = url_handler.build_url(
+        url = url_handler.build_url(
             self.stn_id,
             self.bbox,
             self.min_years,
             self.last_date,
         )
+        return url
 
     def to_dict_frame(self) -> Dict[str, pd.DataFrame]:
         wsdf = WeatherStationsDataframe(self.url)
         dict_frame = wsdf.to_dict_frame()
         return dict_frame
 
-    @staticmethod
-    def _get_unique_rowval(df: pd.DataFrame, col: str) -> str:
-        return df[col].unique()[0]
-
-    def _df_to_xr(self, df: pd.DataFrame) -> xr.Dataset:
-        x = self._get_unique_rowval(df, "x")
-        y = self._get_unique_rowval(df, "y")
-        station_name = self._get_unique_rowval(df, "STATION_NAME")
-        province_code = self._get_unique_rowval(df, "PROVINCE_CODE")
-        climate_identifier = self._get_unique_rowval(df, "CLIMATE_IDENTIFIER")
-        df = df.drop(
-            columns=[
-                "x",
-                "y",
-                "STATION_NAME",
-                "CLIMATE_IDENTIFIER",
-                "ID",
-                "PROVINCE_CODE",
-                "LOCAL_YEAR",
-                "LOCAL_MONTH",
-                "LOCAL_DAY",
-            ]
-        )
-        ds = xr.Dataset.from_dataframe(df)
-        ds = ds.rename({"LOCAL_DATE": "time"})
-        ds = ds.assign_coords(
-            {
-                "x": x,
-                "y": y,
-                "station": climate_identifier,
-                "station_name": station_name,
-                "province_code": province_code,
-            }
-        )
-        return ds
-
     def to_xr(self) -> xr.Dataset:
         dict_frame = self.to_dict_frame()
-        ds_list = []
-        for _, df in dict_frame.items():
-            ds = self._df_to_xr(df)
-            ds_list.append(ds)
-        ds = xr.concat(ds_list, dim="station")
+        wsxr = WeatherStationsXArray(dict_frame)
+        ds = wsxr.to_xr()
         return ds
