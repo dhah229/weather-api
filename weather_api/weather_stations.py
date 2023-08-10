@@ -39,6 +39,8 @@ class WeatherStations:
             end_date = datetime.now()
             self.end_date = end_date.replace(hour=0, minute=0, second=0)
         self.url = self.get_url()
+        self.dict_frame = None
+        self.ds = None
 
     def get_url(self) -> str:
         url_handler = WeatherStationsUrlHandler(self.start_date, self.end_date)
@@ -52,11 +54,12 @@ class WeatherStations:
 
     def to_dict_frame(self) -> Dict[str, pd.DataFrame]:
         wsdf = WeatherStationsDataframe(self.url)
-        dict_frame = wsdf.to_dict_frame()
-        return dict_frame
+        self.dict_frame = wsdf.to_dict_frame()
+        return self.dict_frame
 
     def to_xr(self) -> xr.Dataset:
-        dict_frame = self.to_dict_frame()
-        wsxr = WeatherStationsXArray(dict_frame)
+        if self.dict_frame is None:
+            self.dict_frame = self.to_dict_frame()
+        wsxr = WeatherStationsXArray(self.dict_frame)
         ds = wsxr.to_xr()
         return ds
