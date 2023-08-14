@@ -7,15 +7,12 @@ from .utils.url_handler import HydrometricStationsUrlHandler
 from .utils.xarray import HydrometricStationsXArray
 
 """
-https://api.weather.gc.ca/
 https://api.weather.gc.ca/openapi?f=html
-https://climate.weather.gc.ca/historical_data/search_historic_data_e.html
-https://climatedata.ca/
 """
 
 
 class HydrometricStations:
-    """Weather station class for retrieving data from the Government of Canada's historical weather data API.
+    """Hydrometric station class for retrieving data from the Government of Canada's historical weather data API.
 
     Either one of `stn_id` or `bbox` must be specified. If both are specified, `bbox` will be used to populate `stn_id`.
     """
@@ -40,9 +37,7 @@ class HydrometricStations:
 
     def get_url(self) -> str:
         url_handler = HydrometricStationsUrlHandler(self.start_date, self.end_date)
-        url = url_handler.build_url(
-            self.stn_id
-        )
+        url = url_handler.build_url(self.stn_id)
         return url
 
     def to_dict_frame(self) -> Dict[str, pd.DataFrame]:

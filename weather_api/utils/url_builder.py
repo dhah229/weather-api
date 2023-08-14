@@ -23,7 +23,7 @@ class UrlBuilder:
     @property
     def date_range_hydrometric(self):
         return self.params.get("datetime")
-    
+
     @date_range_hydrometric.setter
     def date_range_hydrometric(self, value: Tuple[datetime, datetime]):
         start_date_str = value[0].strftime("%Y-%m-%d")
@@ -81,7 +81,7 @@ class UrlBuilder:
     @property
     def station_number(self):
         return self.params.get("STATION_NUMBER")
-    
+
     @station_number.setter
     def station_number(self, value):
         self.params["STATION_NUMBER"] = value

@@ -25,7 +25,7 @@ class WeatherStationsDataframe(DataframeHandler):
     @staticmethod
     def to_df(path: str) -> pd.DataFrame:
         df = pd.read_csv(
-            path, dtype=WeatherStationsDataTypes.dtypes, parse_dates=['LOCAL_DATE']
+            path, dtype=WeatherStationsDataTypes.dtypes, parse_dates=["LOCAL_DATE"]
         )
         df = df.set_index("LOCAL_DATE")
         return df
@@ -38,20 +38,21 @@ class WeatherStationsDataframe(DataframeHandler):
             dict_frame[str(stn_id)] = df
         return dict_frame
 
+
 class HydrometricStationsDataframe(DataframeHandler):
     """Class to read the hydrometric data from the Government of Canada's historical weather data API."""
 
     def __init__(self, paths: List[str]):
         self.paths = paths
-    
+
     @staticmethod
     def to_df(path: str) -> pd.DataFrame:
         df = pd.read_csv(
-            path, dtype=HydrometricStationsDataTypes.dtypes, parse_dates=['DATE'] 
+            path, dtype=HydrometricStationsDataTypes.dtypes, parse_dates=["DATE"]
         )
         df = df.set_index("DATE")
         return df
-    
+
     def to_dict_frame(self) -> Dict[str, pd.DataFrame]:
         dict_frame = {}
         for path in self.paths:

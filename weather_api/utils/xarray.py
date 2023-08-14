@@ -5,8 +5,10 @@ from abc import ABC, abstractmethod
 
 # this script is used to handle the csv files that are downloaded from the weather api
 
+
 def _get_unique_rowval(df: pd.DataFrame, col: str) -> str:
-        return df[col].unique()[0]
+    return df[col].unique()[0]
+
 
 class XArrayHandler(ABC):
     @abstractmethod
@@ -65,9 +67,7 @@ class WeatherStationsXArray(XArrayHandler):
         return ds
 
 
-
 class HydrometricStationsXArray(XArrayHandler):
-
     def __init__(self, dict_frame: Dict[str, pd.DataFrame]):
         self.dict_frame = dict_frame
 
@@ -111,5 +111,3 @@ class HydrometricStationsXArray(XArrayHandler):
             ds_list.append(ds)
         ds = xr.concat(ds_list, dim="station_number")
         return ds
-
-    

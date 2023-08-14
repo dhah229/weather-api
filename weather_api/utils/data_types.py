@@ -39,6 +39,7 @@ class WeatherStationsDataTypes:
         "MAX_REL_HUMIDITY_FLAG": "category",
     }
 
+
 class HydrometricStationsDataTypes:
     """Used for handling hydrometric station data to pandas dataframes."""
 

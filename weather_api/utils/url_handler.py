@@ -79,13 +79,13 @@ class WeatherStationsUrlHandler(UrlHandler):
             return [self.get_url(id) for id in stn_id]
         else:
             return [self.get_url(stn_id)]
-        
+
+
 class HydrometricStationsUrlHandler(UrlHandler):
-    
     def __init__(self, start_date: datetime, end_date: datetime):
         self.start_date = start_date
         self.end_date = end_date
-    
+
     def get_bbox_url(self):
         pass
 
@@ -99,6 +99,6 @@ class HydrometricStationsUrlHandler(UrlHandler):
         builder.station_number = stn_id
         response_url = builder.build()
         return response_url
-    
+
     def build_url(self, stn_id: Union[str, List[str]] = None):
         return [self.get_url(stn_id)]
