@@ -79,3 +79,26 @@ class WeatherStationsUrlHandler(UrlHandler):
             return [self.get_url(id) for id in stn_id]
         else:
             return [self.get_url(stn_id)]
+        
+class HydrometricStationsUrlHandler(UrlHandler):
+    
+    def __init__(self, start_date: datetime, end_date: datetime):
+        self.start_date = start_date
+        self.end_date = end_date
+    
+    def get_bbox_url(self):
+        pass
+
+    def get_url(self, stn_id: str = None) -> str:
+        builder = UrlBuilder("hydrometric-daily-mean")
+        builder.date_range_hydrometric = (self.start_date, self.end_date)
+        builder.sortby = "DATE"
+        builder.format = "csv"
+        builder.limit = "1500000"
+        builder.startindex = "0"
+        builder.station_number = stn_id
+        response_url = builder.build()
+        return response_url
+    
+    def build_url(self, stn_id: Union[str, List[str]] = None):
+        return [self.get_url(stn_id)]

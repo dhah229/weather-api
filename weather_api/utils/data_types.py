@@ -38,3 +38,21 @@ class WeatherStationsDataTypes:
         "MAX_REL_HUMIDITY": "float32",
         "MAX_REL_HUMIDITY_FLAG": "category",
     }
+
+class HydrometricStationsDataTypes:
+    """Used for handling hydrometric station data to pandas dataframes."""
+
+    dtypes = {
+        "x": "float32",
+        "y": "float32",
+        "STATION_NAME": "str",
+        "STATION_NUMBER": "str",
+        "IDENTIFIER": "str",
+        "PROV_TERR_STATE_LOC": "str",
+        "LEVEL": "float32",
+        "DISCHARGE": "float32",
+        "DISCHARGE_SYMBOL_EN": "category",
+        "DISCHARGE_SYMBOL_FR": "category",
+        "LEVEL_SYMBOL_EN": "category",
+        "LEVEL_SYMBOL_FR": "category",
+    }
