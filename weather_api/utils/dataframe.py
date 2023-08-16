@@ -42,15 +42,17 @@ class WeatherStationsDataframe(DataframeHandler):
 class HydrometricStationsDataframe(DataframeHandler):
     """Class to read the hydrometric data from the Government of Canada's historical weather data API."""
 
-    def __init__(self, paths: List[str]):
+    def __init__(self, paths: List[str], realtime: bool = False):
         self.paths = paths
+        self.realtime = realtime
 
-    @staticmethod
-    def to_df(path: str) -> pd.DataFrame:
+    def to_df(self, path: str) -> pd.DataFrame:
+        date_column = "DATETIME" if self.realtime else "DATE"
         df = pd.read_csv(
-            path, dtype=HydrometricStationsDataTypes.dtypes, parse_dates=["DATE"]
+            path, dtype=HydrometricStationsDataTypes.dtypes, parse_dates=[date_column]
         )
-        df = df.set_index("DATE")
+        df = df.set_index(date_column)
+        df.index.rename('DATE', inplace=True)
         return df
 
     def to_dict_frame(self) -> Dict[str, pd.DataFrame]:

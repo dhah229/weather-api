@@ -22,6 +22,7 @@ class HydrometricStations:
         stn_id: Union[str, list] = None,
         start_date: Optional[datetime] = None,
         end_date: Optional[datetime] = None,
+        realtime: str = False,
     ):
         self.stn_id = stn_id
         if start_date is None:
@@ -29,12 +30,13 @@ class HydrometricStations:
         if end_date is None:
             end_date = datetime.now()
             self.end_date = end_date.replace(hour=0, minute=0, second=0)
+        self.realtime = realtime
         self.url = self.get_url()
         self.dict_frame = None
         self.ds = None
 
     def get_url(self) -> str:
-        url_handler = HydrometricStationsUrlHandler(self.start_date, self.end_date)
+        url_handler = HydrometricStationsUrlHandler(self.start_date, self.end_date, self.realtime)
         url = url_handler.build_url(self.stn_id)
         return url
     
@@ -46,7 +48,7 @@ class HydrometricStations:
         return df
 
     def to_dict_frame(self) -> Dict[str, pd.DataFrame]:
-        data_handler = HydrometricStationsDataframe(self.url)
+        data_handler = HydrometricStationsDataframe(self.url, self.realtime)
         self.dict_frame = data_handler.to_dict_frame()
         return self.dict_frame
 
