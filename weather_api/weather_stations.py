@@ -53,13 +53,13 @@ class WeatherStations:
         return url
 
     def to_dict_frame(self) -> Dict[str, pd.DataFrame]:
-        wsdf = WeatherStationsDataframe(self.url)
-        self.dict_frame = wsdf.to_dict_frame()
+        data_handler = WeatherStationsDataframe(self.url)
+        self.dict_frame = data_handler.to_dict_frame()
         return self.dict_frame
 
     def to_xr(self) -> xr.Dataset:
         if self.dict_frame is None:
             self.dict_frame = self.to_dict_frame()
-        wsxr = WeatherStationsXArray(self.dict_frame)
-        ds = wsxr.to_xr()
+        data_handler = WeatherStationsXArray(self.dict_frame)
+        ds = data_handler.to_xr()
         return ds

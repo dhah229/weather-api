@@ -89,6 +89,16 @@ class HydrometricStationsUrlHandler(UrlHandler):
     def get_bbox_url(self):
         pass
 
+    def get_metadata(self, stn_id: str = None) -> str:
+        builder = UrlBuilder("hydrometric-stations")
+        builder.format = "csv"
+        builder.limit = "1500000"
+        builder.startindex = "0"
+        builder.station_number = stn_id
+        response_url = builder.build()
+        return response_url
+
+
     def get_url(self, stn_id: str = None) -> str:
         builder = UrlBuilder("hydrometric-daily-mean")
         builder.date_range_hydrometric = (self.start_date, self.end_date)
@@ -100,5 +110,12 @@ class HydrometricStationsUrlHandler(UrlHandler):
         response_url = builder.build()
         return response_url
 
-    def build_url(self, stn_id: Union[str, List[str]] = None):
-        return [self.get_url(stn_id)]
+    def build_url(self, stn_id: Union[str, List[str]] = None, metadata=False) -> List[str]:
+        if metadata:
+            url_builder = self.get_metadata
+        else:
+            url_builder = self.get_url
+        if isinstance(stn_id, list):
+            return [url_builder(id) for id in stn_id]
+        else:
+            return [url_builder(stn_id)]

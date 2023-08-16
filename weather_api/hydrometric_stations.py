@@ -22,10 +22,8 @@ class HydrometricStations:
         stn_id: Union[str, list] = None,
         start_date: Optional[datetime] = None,
         end_date: Optional[datetime] = None,
-        bbox: Optional[list] = None,
     ):
         self.stn_id = stn_id
-        self.bbox = bbox
         if start_date is None:
             self.start_date = datetime(1840, 3, 1)
         if end_date is None:
@@ -39,15 +37,22 @@ class HydrometricStations:
         url_handler = HydrometricStationsUrlHandler(self.start_date, self.end_date)
         url = url_handler.build_url(self.stn_id)
         return url
+    
+    def get_metadata(self) -> pd.DataFrame:
+        url_handler = HydrometricStationsUrlHandler(self.start_date, self.end_date)
+        metadata_url = url_handler.build_url(self.stn_id, metadata=True)
+        dfs = [pd.read_csv(url) for url in metadata_url]
+        df = pd.concat(dfs)
+        return df
 
     def to_dict_frame(self) -> Dict[str, pd.DataFrame]:
-        wsdf = HydrometricStationsDataframe(self.url)
-        self.dict_frame = wsdf.to_dict_frame()
+        data_handler = HydrometricStationsDataframe(self.url)
+        self.dict_frame = data_handler.to_dict_frame()
         return self.dict_frame
 
     def to_xr(self) -> xr.Dataset:
         if self.dict_frame is None:
             self.dict_frame = self.to_dict_frame()
-        wsxr = HydrometricStationsXArray(self.dict_frame)
-        ds = wsxr.to_xr()
+        data_handler = HydrometricStationsXArray(self.dict_frame)
+        ds = data_handler.to_xr()
         return ds
