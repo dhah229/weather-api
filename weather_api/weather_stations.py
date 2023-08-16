@@ -26,13 +26,9 @@ class WeatherStations:
         start_date: Optional[datetime] = None,
         end_date: Optional[datetime] = None,
         bbox: Optional[list] = None,
-        min_years: Optional[int] = None,
-        last_date: Optional[datetime] = None,
     ):
         self.stn_id = stn_id
         self.bbox = bbox
-        self.min_years = min_years
-        self.last_date = last_date
         if start_date is None:
             self.start_date = datetime(1840, 3, 1)
         if end_date is None:
@@ -47,8 +43,6 @@ class WeatherStations:
         url = url_handler.build_url(
             self.stn_id,
             self.bbox,
-            self.min_years,
-            self.last_date,
         )
         return url
 

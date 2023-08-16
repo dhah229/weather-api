@@ -11,10 +11,6 @@ class UrlHandler(ABC):
         pass
 
     @abstractmethod
-    def get_bbox_url(self) -> List[str]:
-        pass
-
-    @abstractmethod
     def build_url(self) -> List[str]:
         pass
 
@@ -24,28 +20,13 @@ class WeatherStationsUrlHandler(UrlHandler):
         self.start_date = start_date
         self.end_date = end_date
 
-    def get_bbox_url(
-        self, bbox: list, min_years: int = None, last_date: datetime = None
-    ) -> List[str]:
+    def get_bbox_url(self, bbox: list) -> List[str]:
         # runs a climate-stations query to get the climate-identifiers
         # then builds the urls for each climate-identifier
         builder = UrlBuilder("climate-stations")
         builder.bbox = bbox
-        builder.format = "csv"
-        builder.limit = "1500000"
-        builder.startindex = "0"
         response_url = builder.build()
         df = pd.read_csv(response_url)
-        if min_years is not None:
-            # only get stations that have data for at least min_years
-            f_date = pd.to_datetime(df["FIRST_DATE"])
-            l_date = pd.to_datetime(df["LAST_DATE"])
-            df = df[(l_date - f_date).dt.days >= min_years * 365]
-        if last_date is not None:
-            # only get stations that have data past the last_date
-            l_date = pd.to_datetime(df["LAST_DATE"])
-            df = df[l_date >= last_date]
-
         self.stn_id = df["CLIMATE_IDENTIFIER"].unique().tolist()
         urls = []
         for id in self.stn_id:
@@ -57,9 +38,6 @@ class WeatherStationsUrlHandler(UrlHandler):
         builder = UrlBuilder("climate-daily")
         builder.date_range = (self.start_date, self.end_date)
         builder.sortby = "PROVINCE_CODE,STN_ID,LOCAL_DATE"
-        builder.format = "csv"
-        builder.limit = "1500000"
-        builder.startindex = "0"
         builder.climate_identifier = stn_id
         response_url = builder.build()
         return response_url
@@ -68,13 +46,11 @@ class WeatherStationsUrlHandler(UrlHandler):
         self,
         stn_id: Union[str, List[str]] = None,
         bbox: List[float] = None,
-        min_years: int = None,
-        last_date: datetime = None,
     ) -> List[str]:
         if bbox is None and stn_id is None:
             raise ValueError("Either bbox or stn_id must be specified.")
         if bbox is not None:
-            return self.get_bbox_url(bbox, min_years, last_date)
+            return self.get_bbox_url(bbox)
         if isinstance(stn_id, list):
             return [self.get_url(id) for id in stn_id]
         else:
@@ -82,39 +58,49 @@ class WeatherStationsUrlHandler(UrlHandler):
 
 
 class HydrometricStationsUrlHandler(UrlHandler):
-    def __init__(self, start_date: datetime, end_date: datetime, realtime:str=False):
+    def __init__(
+        self,
+        start_date: datetime,
+        end_date: datetime,
+        stn_id: Union[str, List[str]] = None,
+        realtime: str = False,
+        bbox: list = None,
+    ):
         self.start_date = start_date
         self.end_date = end_date
+        self.stn_id = stn_id
         self.realtime = realtime
-
-    def get_bbox_url(self):
-        pass
+        self.bbox = bbox
 
     def get_metadata(self, stn_id: str = None) -> str:
         builder = UrlBuilder("hydrometric-stations")
-        builder.format = "csv"
-        builder.limit = "1500000"
-        builder.startindex = "0"
-        builder.station_number = stn_id
+        if stn_id is not None:
+            builder.station_number = stn_id
+        else:
+            builder.bbox = self.bbox
         response_url = builder.build()
         return response_url
-    
+
+    def get_bbox_url(self) -> List[str]:
+        response_url = self.get_metadata()
+        df = pd.read_csv(response_url)
+        self.stn_id = df["STATION_NUMBER"].unique().tolist()
+        urls = []
+        for id in self.stn_id:
+            response_url = self.get_url(id)
+            urls.append(response_url)
+        return urls
+
     def _url_realtime(self, stn_id: str = None) -> str:
         builder = UrlBuilder("hydrometric-realtime")
-        builder.format = "csv"
-        builder.limit = "1500000"
-        builder.startindex = "0"
         builder.station_number = stn_id
         response_url = builder.build()
         return response_url
 
     def _url_daily(self, stn_id: str = None) -> str:
-        builder = UrlBuilder("hydrometric-daily")
+        builder = UrlBuilder("hydrometric-daily-mean")
         builder.date_range_hydrometric = (self.start_date, self.end_date)
         builder.sortby = "DATE"
-        builder.format = "csv"
-        builder.limit = "1500000"
-        builder.startindex = "0"
         builder.station_number = stn_id
         response_url = builder.build()
         return response_url
@@ -126,12 +112,18 @@ class HydrometricStationsUrlHandler(UrlHandler):
             response_url = self._url_daily(stn_id)
         return response_url
 
-    def build_url(self, stn_id: Union[str, List[str]] = None, metadata=False) -> List[str]:
-        if metadata:
-            url_builder = self.get_metadata
+    def build_url_metadata(self) -> List[str]:
+        if isinstance(self.stn_id, list):
+            return [self.get_metadata(id) for id in self.stn_id]
+        elif isinstance(self.stn_id, str):
+            return [self.get_metadata(self.stn_id)]
         else:
-            url_builder = self.get_url
-        if isinstance(stn_id, list):
-            return [url_builder(id) for id in stn_id]
+            return [self.get_metadata()]
+
+    def build_url(self) -> List[str]:
+        if self.bbox is not None:
+            return self.get_bbox_url()
+        if isinstance(self.stn_id, list):
+            return [self.get_url(id) for id in self.stn_id]
         else:
-            return [url_builder(stn_id)]
+            return [self.get_url(self.stn_id)]

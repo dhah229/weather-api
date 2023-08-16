@@ -22,6 +22,7 @@ class HydrometricStations:
         stn_id: Union[str, list] = None,
         start_date: Optional[datetime] = None,
         end_date: Optional[datetime] = None,
+        bbox: Optional[list] = None,
         realtime: str = False,
     ):
         self.stn_id = stn_id
@@ -30,19 +31,21 @@ class HydrometricStations:
         if end_date is None:
             end_date = datetime.now()
             self.end_date = end_date.replace(hour=0, minute=0, second=0)
+        self.bbox = bbox
         self.realtime = realtime
+        self.url_handler = HydrometricStationsUrlHandler(
+            self.start_date, self.end_date, self.stn_id, self.realtime, self.bbox
+        )
         self.url = self.get_url()
         self.dict_frame = None
         self.ds = None
 
     def get_url(self) -> str:
-        url_handler = HydrometricStationsUrlHandler(self.start_date, self.end_date, self.realtime)
-        url = url_handler.build_url(self.stn_id)
+        url = self.url_handler.build_url()
         return url
-    
+
     def get_metadata(self) -> pd.DataFrame:
-        url_handler = HydrometricStationsUrlHandler(self.start_date, self.end_date)
-        metadata_url = url_handler.build_url(self.stn_id, metadata=True)
+        metadata_url = self.url_handler.build_url_metadata()
         dfs = [pd.read_csv(url) for url in metadata_url]
         df = pd.concat(dfs)
         return df

@@ -8,7 +8,11 @@ class UrlBuilder:
 
     def __init__(self, route: str):
         self.url = f"https://api.weather.gc.ca/collections/{route}/items"
-        self.params = {}
+        self.params = {
+            "f": "csv",
+            "limit": "1500000",
+            "startindex": "0",
+        }
 
     @property
     def date_range(self):
