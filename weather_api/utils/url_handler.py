@@ -31,7 +31,7 @@ class WeatherStationsUrlHandler(UrlHandler):
     def get_metadata(self, stn_id: str = None) -> str:
         builder = UrlBuilder("climate-stations")
         if stn_id is not None:
-            builder.station_number = stn_id
+            builder.climate_identifier = stn_id
         else:
             builder.bbox = self.bbox
         response_url = builder.build()
