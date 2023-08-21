@@ -34,17 +34,22 @@ class WeatherStations:
         if end_date is None:
             end_date = datetime.now()
             self.end_date = end_date.replace(hour=0, minute=0, second=0)
-        self.url_handler = WeatherStationsUrlHandler(self.start_date, self.end_date)
+        self.url_handler = WeatherStationsUrlHandler(
+            self.start_date, self.end_date, self.stn_id, self.bbox
+        )
         self.url = self.get_url()
         self.dict_frame = None
         self.ds = None
 
     def get_url(self) -> str:
-        url = self.url_handler.build_url(
-            self.stn_id,
-            self.bbox,
-        )
+        url = self.url_handler.build_url()
         return url
+
+    def get_metadata(self) -> pd.DataFrame:
+        metadata_url = self.url_handler.build_url_metadata()
+        dfs = [pd.read_csv(url) for url in metadata_url]
+        df = pd.concat(dfs)
+        return df
 
     def to_dict_frame(self) -> Dict[str, pd.DataFrame]:
         data_handler = WeatherStationsDataframe(self.url)

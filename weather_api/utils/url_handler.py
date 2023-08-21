@@ -16,16 +16,29 @@ class UrlHandler(ABC):
 
 
 class WeatherStationsUrlHandler(UrlHandler):
-    def __init__(self, start_date: datetime, end_date: datetime):
+    def __init__(
+        self,
+        start_date: datetime,
+        end_date: datetime,
+        stn_id: Union[str, List[str]] = None,
+        bbox: list = None,
+    ):
         self.start_date = start_date
         self.end_date = end_date
+        self.stn_id = stn_id
+        self.bbox = bbox
 
-    def get_bbox_url(self, bbox: list) -> List[str]:
-        # runs a climate-stations query to get the climate-identifiers
-        # then builds the urls for each climate-identifier
+    def get_metadata(self, stn_id: str = None) -> str:
         builder = UrlBuilder("climate-stations")
-        builder.bbox = bbox
+        if stn_id is not None:
+            builder.station_number = stn_id
+        else:
+            builder.bbox = self.bbox
         response_url = builder.build()
+        return response_url
+
+    def get_bbox_url(self) -> List[str]:
+        response_url = self.get_metadata()
         df = pd.read_csv(response_url)
         self.stn_id = df["CLIMATE_IDENTIFIER"].unique().tolist()
         urls = []
@@ -42,19 +55,21 @@ class WeatherStationsUrlHandler(UrlHandler):
         response_url = builder.build()
         return response_url
 
-    def build_url(
-        self,
-        stn_id: Union[str, List[str]] = None,
-        bbox: List[float] = None,
-    ) -> List[str]:
-        if bbox is None and stn_id is None:
-            raise ValueError("Either bbox or stn_id must be specified.")
-        if bbox is not None:
-            return self.get_bbox_url(bbox)
-        if isinstance(stn_id, list):
-            return [self.get_url(id) for id in stn_id]
+    def build_url_metadata(self) -> List[str]:
+        if isinstance(self.stn_id, list):
+            return [self.get_metadata(id) for id in self.stn_id]
+        elif isinstance(self.stn_id, str):
+            return [self.get_metadata(self.stn_id)]
         else:
-            return [self.get_url(stn_id)]
+            return [self.get_metadata()]
+
+    def build_url(self) -> List[str]:
+        if self.bbox is not None:
+            return self.get_bbox_url()
+        if isinstance(self.stn_id, list):
+            return [self.get_url(id) for id in self.stn_id]
+        else:
+            return [self.get_url(self.stn_id)]
 
 
 class HydrometricStationsUrlHandler(UrlHandler):
