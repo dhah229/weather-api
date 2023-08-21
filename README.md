@@ -1,4 +1,5 @@
 # weather-api
+![Tests](https://github.com/dhah229/weather-api/actions/workflows/tests.yml/badge.svg)
 This is a Python package that provides a convenient way to fetch weather station and hydrometric station data using the GeoMet OGC API. It simplifies the process of retrieving data and parsing it into pandas DataFrames or xarray datasets for further analysis.
 
 ## Installation
