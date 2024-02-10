@@ -27,7 +27,7 @@ class HydrometricStations:
     ):
         self.stn_id = stn_id
         if start_date is None:
-            self.start_date = datetime(1840, 3, 1)
+            self.start_date = datetime(1900, 1, 1)
         else:
             self.start_date = start_date
         if end_date is None:
