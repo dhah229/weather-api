@@ -102,6 +102,8 @@ class HydrometricStationsXArray(XArrayHandler):
                 "province_code": province_code,
             }
         )
+        ds['DISCHARGE'].attrs['units'] = "m^3/s"
+        ds['LEVEL'].attrs['units'] = "m"
         return ds
 
     def to_xr(self) -> xr.Dataset:
