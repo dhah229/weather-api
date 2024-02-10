@@ -1,7 +1,8 @@
 import pandas as pd
 from .data_types import WeatherStationsDataTypes, HydrometricStationsDataTypes
-from typing import List, Dict
+from typing import List, Dict, Union
 from abc import ABC, abstractmethod
+from pandas.errors import EmptyDataError
 
 # this script is used to handle the csv files that are downloaded from the weather api
 
@@ -46,11 +47,15 @@ class HydrometricStationsDataframe(DataframeHandler):
         self.paths = paths
         self.realtime = realtime
 
-    def to_df(self, path: str) -> pd.DataFrame:
+    def to_df(self, path: str) -> Union[pd.DataFrame, None]:
         date_column = "DATETIME" if self.realtime else "DATE"
-        df = pd.read_csv(
-            path, dtype=HydrometricStationsDataTypes.dtypes, parse_dates=[date_column]
-        )
+        try:
+            df = pd.read_csv(
+                path, dtype=HydrometricStationsDataTypes.dtypes, parse_dates=[date_column]
+            )
+        except EmptyDataError:
+            print(f"No data found for {path}")
+            return None
         df = df.set_index(date_column)
         df.index.rename('DATE', inplace=True)
         return df
@@ -59,6 +64,8 @@ class HydrometricStationsDataframe(DataframeHandler):
         dict_frame = {}
         for path in self.paths:
             df = self.to_df(path)
+            if df is None:
+                continue
             stn_id = df["STATION_NUMBER"].unique()[0]
             dict_frame[str(stn_id)] = df
         return dict_frame
