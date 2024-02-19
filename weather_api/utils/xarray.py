@@ -51,7 +51,7 @@ class WeatherStationsXArray(XArrayHandler):
             {
                 "x": x,
                 "y": y,
-                "station": climate_identifier,
+                "climate_identifier": climate_identifier,
                 "station_name": station_name,
                 "province_code": province_code,
             }
@@ -63,7 +63,7 @@ class WeatherStationsXArray(XArrayHandler):
         for _, df in self.dict_frame.items():
             ds = self.df_to_xr(df)
             ds_list.append(ds)
-        ds = xr.concat(ds_list, dim="station")
+        ds = xr.concat(ds_list, dim="climate_identifier")
         return ds
 
 
