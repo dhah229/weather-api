@@ -41,9 +41,13 @@ class WeatherStations:
         self.bbox = bbox
         if start_date is None:
             self.start_date = datetime(1840, 3, 1)
+        else:
+            self.start_date = start_date
         if end_date is None:
             end_date = datetime.now()
             self.end_date = end_date.replace(hour=0, minute=0, second=0)
+        else:
+            self.end_date = end_date
         self.url_handler = WeatherStationsUrlHandler(
             self.start_date, self.end_date, self.stn_id, self.bbox
         )
