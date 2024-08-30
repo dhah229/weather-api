@@ -24,4 +24,11 @@ ds = hs.to_xr()
 ```
 You can also pass the bbox argument to get all the stations within the boundary box.
 
+For weather stations, you can also invoke the `plot_stations()` method:
+```python
+from weather_api import WeatherStations
 
+ws = WeatherStations()
+ws.plot_stations()
+```
+You can interact with the map and find out which station ids you need.
