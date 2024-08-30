@@ -1,10 +1,13 @@
 from datetime import datetime
 import pandas as pd
 from typing import Union, Optional, Dict
+import folium
 import xarray as xr
 from .utils.dataframe import WeatherStationsDataframe
 from .utils.url_handler import WeatherStationsUrlHandler
 from .utils.xarray import WeatherStationsXArray
+from .utils.plot_map import plot_weather_stations
+
 
 """
 https://api.weather.gc.ca/
@@ -26,7 +29,7 @@ class WeatherStations:
     end_date : Optional[datetime]
         The end date of the data to retrieve. If not specified, the default is the current date at midnight.
     bbox : Optional[list]
-        The bounding box to retrieve data for (left, bottom, right, top). 
+        The bounding box to retrieve data for (left, bottom, right, top).
         If `stn_id` is not specified, `bbox` must be specified.
     """
 
@@ -80,3 +83,19 @@ class WeatherStations:
         data_handler = WeatherStationsXArray(self.dict_frame)
         ds = data_handler.to_xr()
         return ds
+
+    def plot_stations(
+        self, meta: Union[None, pd.DataFrame] = None, to_html: bool = False
+    ) -> Union[folium.Map, None]:
+        """Plot the weather stations on a map.
+
+        If `meta` is not specified, the default metadata will be retrieved. It is recommended to use this with
+        Jupyter Notebook to display the map. If `to_html` is True, the map will be saved to an HTML file.
+        """
+        if meta is None:
+            meta = self.get_metadata()
+        m = plot_weather_stations(meta)
+        if to_html:
+            m.save("weather_stations.html")
+        else:
+            return m

@@ -51,13 +51,15 @@ class HydrometricStationsDataframe(DataframeHandler):
         date_column = "DATETIME" if self.realtime else "DATE"
         try:
             df = pd.read_csv(
-                path, dtype=HydrometricStationsDataTypes.dtypes, parse_dates=[date_column]
+                path,
+                dtype=HydrometricStationsDataTypes.dtypes,
+                parse_dates=[date_column],
             )
         except EmptyDataError:
             print(f"No data found for {path}")
             return None
         df = df.set_index(date_column)
-        df.index.rename('DATE', inplace=True)
+        df.index.rename("DATE", inplace=True)
         return df
 
     def to_dict_frame(self) -> Dict[str, pd.DataFrame]:

@@ -23,7 +23,7 @@ class HydrometricStations:
     end_date : Optional[datetime]
         The end date of the data to retrieve. If not specified, the default is the current date at midnight.
     bbox : Optional[list]
-        The bounding box to retrieve data for (left, bottom, right, top). 
+        The bounding box to retrieve data for (left, bottom, right, top).
         If `stn_id` is not specified, `bbox` must be specified.
     realtime : str
         If True, retrieve the realtime-data. If False, retrieve historical data.

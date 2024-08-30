@@ -32,7 +32,7 @@ class WeatherStationsUrlHandler(UrlHandler):
         builder = UrlBuilder("climate-stations")
         if stn_id is not None:
             builder.climate_identifier = stn_id
-        else:
+        elif self.bbox is not None:
             builder.bbox = self.bbox
         response_url = builder.build()
         return response_url
