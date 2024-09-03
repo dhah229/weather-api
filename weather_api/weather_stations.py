@@ -86,7 +86,7 @@ class WeatherStations:
 
     def plot_stations(
         self, meta: Union[None, pd.DataFrame] = None,
-    ) -> Union[folium.Map, None]:
+    ) -> folium.Map:
         """Plot the weather stations on a map.
 
         If `meta` is not specified, the default metadata will be retrieved. It is recommended to use this with
