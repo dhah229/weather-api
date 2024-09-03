@@ -85,17 +85,14 @@ class WeatherStations:
         return ds
 
     def plot_stations(
-        self, meta: Union[None, pd.DataFrame] = None, to_html: bool = False
+        self, meta: Union[None, pd.DataFrame] = None,
     ) -> Union[folium.Map, None]:
         """Plot the weather stations on a map.
 
         If `meta` is not specified, the default metadata will be retrieved. It is recommended to use this with
-        Jupyter Notebook to display the map. If `to_html` is True, the map will be saved to an HTML file.
+        Jupyter Notebook to display the map.
         """
         if meta is None:
             meta = self.get_metadata()
         m = plot_weather_stations(meta)
-        if to_html:
-            m.save("weather_stations.html")
-        else:
-            return m
+        return m
