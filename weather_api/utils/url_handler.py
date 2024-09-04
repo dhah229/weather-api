@@ -1,8 +1,10 @@
 from abc import ABC, abstractmethod
-from typing import Union, List
-from .url_builder import UrlBuilder
-import pandas as pd
 from datetime import datetime
+from typing import List, Union
+
+import pandas as pd
+
+from .url_builder import UrlBuilder
 
 
 class UrlHandler(ABC):
@@ -12,6 +14,10 @@ class UrlHandler(ABC):
 
     @abstractmethod
     def build_url(self) -> List[str]:
+        pass
+
+    @abstractmethod
+    def build_url_metadata(self) -> List[str]:
         pass
 
 
@@ -78,7 +84,7 @@ class HydrometricStationsUrlHandler(UrlHandler):
         start_date: datetime,
         end_date: datetime,
         stn_id: Union[str, List[str]] = None,
-        realtime: str = False,
+        realtime: bool = False,
         bbox: list = None,
     ):
         self.start_date = start_date

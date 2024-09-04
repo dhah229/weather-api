@@ -1,13 +1,15 @@
-import pandas as pd
-from .data_types import WeatherStationsDataTypes, HydrometricStationsDataTypes
-from typing import List, Dict, Union
 from abc import ABC, abstractmethod
+from typing import Dict, List, Union
+
+import pandas as pd
 from pandas.errors import EmptyDataError
+
+from .data_types import HydrometricStationsDataTypes, WeatherStationsDataTypes
 
 # this script is used to handle the csv files that are downloaded from the weather api
 
 
-class DataframeHandler(ABC):
+class DataFrameHandler(ABC):
     @abstractmethod
     def to_df(self, path: str):
         pass
@@ -17,7 +19,7 @@ class DataframeHandler(ABC):
         pass
 
 
-class WeatherStationsDataframe(DataframeHandler):
+class WeatherStationsDataframe(DataFrameHandler):
     """Class to read the weather station data from the Government of Canada's historical weather data API."""
 
     def __init__(self, paths: List[str]):
@@ -40,7 +42,7 @@ class WeatherStationsDataframe(DataframeHandler):
         return dict_frame
 
 
-class HydrometricStationsDataframe(DataframeHandler):
+class HydrometricStationsDataframe(DataFrameHandler):
     """Class to read the hydrometric data from the Government of Canada's historical weather data API."""
 
     def __init__(self, paths: List[str], realtime: bool = False):
