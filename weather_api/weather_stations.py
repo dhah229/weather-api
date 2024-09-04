@@ -1,13 +1,14 @@
 from datetime import datetime
-import pandas as pd
-from typing import Union, Optional, Dict
+from typing import Optional, Union
+
 import folium
-import xarray as xr
+import pandas as pd
+
+from .base import GeoMetAPI
 from .utils.dataframe import WeatherStationsDataframe
+from .utils.plot_map import plot_weather_stations
 from .utils.url_handler import WeatherStationsUrlHandler
 from .utils.xarray import WeatherStationsXArray
-from .utils.plot_map import plot_weather_stations
-
 
 """
 https://api.weather.gc.ca/
@@ -17,7 +18,7 @@ https://climatedata.ca/
 """
 
 
-class WeatherStations:
+class WeatherStations(GeoMetAPI):
     """Weather station class for retrieving data from the Government of Canada's historical weather data API.
 
     Attributes
@@ -40,52 +41,19 @@ class WeatherStations:
         end_date: Optional[datetime] = None,
         bbox: Optional[list] = None,
     ):
-        self.stn_id = stn_id
-        self.bbox = bbox
-        if start_date is None:
-            self.start_date = datetime(1840, 3, 1)
-        else:
-            self.start_date = start_date
-        if end_date is None:
-            end_date = datetime.now()
-            self.end_date = end_date.replace(hour=0, minute=0, second=0)
-        else:
-            self.end_date = end_date
-        self.url_handler = WeatherStationsUrlHandler(
-            self.start_date, self.end_date, self.stn_id, self.bbox
+        super().__init__(
+            stn_id=stn_id,
+            start_date=start_date,
+            end_date=end_date,
+            bbox=bbox,
+            url_handler=WeatherStationsUrlHandler,
+            dataframe_handler=WeatherStationsDataframe,
+            xarray_handler=WeatherStationsXArray,
         )
-        self.url = self.get_url()
-        self.dict_frame = None
-        self.ds = None
-
-    def get_url(self) -> str:
-        """Build the URL to retrieve the data from."""
-        url = self.url_handler.build_url()
-        return url
-
-    def get_metadata(self) -> pd.DataFrame:
-        """Retrieve the metadata for the specified station(s)."""
-        metadata_url = self.url_handler.build_url_metadata()
-        dfs = [pd.read_csv(url) for url in metadata_url]
-        df = pd.concat(dfs)
-        return df
-
-    def to_dict_frame(self) -> Dict[str, pd.DataFrame]:
-        """Retrieve the data to a dictionary of pandas dataframes."""
-        data_handler = WeatherStationsDataframe(self.url)
-        self.dict_frame = data_handler.to_dict_frame()
-        return self.dict_frame
-
-    def to_xr(self) -> xr.Dataset:
-        """Retrieve the data to an xarray dataset."""
-        if self.dict_frame is None:
-            self.dict_frame = self.to_dict_frame()
-        data_handler = WeatherStationsXArray(self.dict_frame)
-        ds = data_handler.to_xr()
-        return ds
 
     def plot_stations(
-        self, meta: Union[None, pd.DataFrame] = None,
+        self,
+        meta: Union[None, pd.DataFrame] = None,
     ) -> folium.Map:
         """Plot the weather stations on a map.
 
