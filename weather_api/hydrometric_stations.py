@@ -25,7 +25,7 @@ class HydrometricStations(GeoMetAPI):
     bbox : Optional[list]
         The bounding box to retrieve data for (left, bottom, right, top).
         If `stn_id` is not specified, `bbox` must be specified.
-    realtime : str
+    realtime : bool
         If True, retrieve the realtime-data. If False, retrieve historical data.
     """
 
@@ -35,7 +35,7 @@ class HydrometricStations(GeoMetAPI):
         start_date: Optional[datetime] = None,
         end_date: Optional[datetime] = None,
         bbox: Optional[list] = None,
-        realtime: str = False,
+        realtime: bool = False,
     ):
         super().__init__(
             stn_id=stn_id,
