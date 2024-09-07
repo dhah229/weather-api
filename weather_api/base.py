@@ -21,7 +21,7 @@ class GeoMetAPI(ABC):
         end_date: Optional[datetime],
         bbox: Optional[list],
         data_handler: DataHandler,
-        realtime: bool = False,
+        realtime: bool = False,  # for HydrometricStations
     ):
         self.stn_id = stn_id
         self.bbox = bbox
