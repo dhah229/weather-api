@@ -94,10 +94,7 @@ class HydrometricStationsUrlHandler(UrlHandler):
         self.bbox = bbox
 
     def get_metadata(self, stn_id: str = None) -> str:
-        if self.realtime:
-            builder = UrlBuilder("hydrometric-realtime")
-        else:
-            builder = UrlBuilder("hydrometric-stations")
+        builder = UrlBuilder("hydrometric-stations")
         if stn_id is not None:
             builder.station_number = stn_id
         elif self.bbox is not None:
