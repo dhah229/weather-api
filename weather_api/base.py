@@ -68,6 +68,7 @@ class GeoMetAPI(ABC):
 
     def to_dict_frame(self) -> Dict[str, pd.DataFrame]:
         """Retrieve the data to a dictionary of pandas dataframes."""
+        kwargs = {}
         if issubclass(self.dataframe_handler, HydrometricStationsDataframe):
             kwargs = {"realtime": self.realtime}
         data_handler: DataFrameHandler = self.dataframe_handler(self.url, **kwargs)
