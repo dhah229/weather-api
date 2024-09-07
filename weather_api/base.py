@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+from abc import ABC
 from datetime import datetime
 from typing import Dict, Optional, Union
 
@@ -6,9 +6,10 @@ import folium
 import pandas as pd
 import xarray as xr
 
-from weather_api.utils.dataframe import DataFrameHandler, HydrometricStationsDataframe
-from weather_api.utils.url_handler import HydrometricStationsUrlHandler, UrlHandler
-from weather_api.utils.xarray import XArrayHandler
+from .utils.dataframe import DataFrameHandler, HydrometricStationsDataframe
+from .utils.handlers import DataHandler
+from .utils.url_handler import HydrometricStationsUrlHandler, UrlHandler
+from .utils.xarray import XArrayHandler
 
 
 class GeoMetAPI(ABC):
@@ -19,9 +20,7 @@ class GeoMetAPI(ABC):
         start_date: Optional[datetime],
         end_date: Optional[datetime],
         bbox: Optional[list],
-        url_handler: UrlHandler,
-        dataframe_handler: DataFrameHandler,
-        xarray_handler: XArrayHandler,
+        data_handler: DataHandler,
         realtime: bool = False,
     ):
         self.stn_id = stn_id
@@ -37,10 +36,11 @@ class GeoMetAPI(ABC):
             self.end_date = end_date
 
         self.realtime = realtime
-        self._initialize_url_handler(url_handler)
+        self._initialize_url_handler(data_handler.url_handler)
         self.url = self.get_url()
-        self.dataframe_handler = dataframe_handler
-        self.xarray_handler = xarray_handler
+        self.dataframe_handler = data_handler.dataframe_handler
+        self.xarray_handler = data_handler.xarray_handler
+        self.plotting_handler = data_handler.plotting_handler
         self.dict_frame = None
         self.ds = None
 
@@ -84,6 +84,16 @@ class GeoMetAPI(ABC):
         ds = data_handler.to_xr()
         return ds
 
-    @abstractmethod
-    def plot_stations(self, meta: pd.DataFrame) -> folium.Map:
-        pass
+    def plot_stations(
+        self,
+        meta: Union[None, pd.DataFrame] = None,
+    ) -> folium.Map:
+        """Plot the weather stations on a map.
+
+        If `meta` is not specified, the default metadata will be retrieved. It is recommended to use this with
+        Jupyter Notebook to display the map.
+        """
+        if meta is None:
+            meta = self.get_metadata()
+        m = self.plotting_handler(meta)
+        return m

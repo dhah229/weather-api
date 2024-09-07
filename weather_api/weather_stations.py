@@ -1,14 +1,8 @@
 from datetime import datetime
 from typing import Optional, Union
 
-import folium
-import pandas as pd
-
 from .base import GeoMetAPI
-from .utils.dataframe import WeatherStationsDataframe
-from .utils.plot_map import plot_weather_stations
-from .utils.url_handler import WeatherStationsUrlHandler
-from .utils.xarray import WeatherStationsXArray
+from .utils.handlers import WeatherStationsDataHandler
 
 """
 https://api.weather.gc.ca/
@@ -46,21 +40,5 @@ class WeatherStations(GeoMetAPI):
             start_date=start_date,
             end_date=end_date,
             bbox=bbox,
-            url_handler=WeatherStationsUrlHandler,
-            dataframe_handler=WeatherStationsDataframe,
-            xarray_handler=WeatherStationsXArray,
+            data_handler=WeatherStationsDataHandler,
         )
-
-    def plot_stations(
-        self,
-        meta: Union[None, pd.DataFrame] = None,
-    ) -> folium.Map:
-        """Plot the weather stations on a map.
-
-        If `meta` is not specified, the default metadata will be retrieved. It is recommended to use this with
-        Jupyter Notebook to display the map.
-        """
-        if meta is None:
-            meta = self.get_metadata()
-        m = plot_weather_stations(meta)
-        return m
