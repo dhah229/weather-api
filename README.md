@@ -11,7 +11,7 @@ pip install -e .
 ```
 
 ## Usage
-Here's a basic example of how to use the weather-api to fetch and parse the hydrometric station data:
+Here's a basic example to fetch hydrometric station data:
 ```python
 from weather_api import HydrometricStations
 
@@ -22,14 +22,12 @@ dcf = wa.to_dict_frame()
 # for an xarray
 ds = wa.to_xr()
 ```
-You can also pass the bbox argument to get all the stations within the boundary box.
-
-For weather stations, you can also invoke the `plot_stations()` method:
+For weather stations, you can invoke the `plot_stations()` method:
 ```python
 from weather_api import WeatherStations
 
-ws = WeatherStations()
-ws.plot_stations()
+wa = WeatherStations()
+wa.plot_stations()
 ```
 
 ![map](images/map_weather.png)
