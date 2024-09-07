@@ -1,7 +1,8 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 from datetime import datetime
 from typing import Dict, Optional, Union
 
+import folium
 import pandas as pd
 import xarray as xr
 
@@ -82,3 +83,7 @@ class GeoMetAPI(ABC):
         data_handler: XArrayHandler = self.xarray_handler(self.dict_frame)
         ds = data_handler.to_xr()
         return ds
+
+    @abstractmethod
+    def plot_stations(self, meta: pd.DataFrame) -> folium.Map:
+        pass

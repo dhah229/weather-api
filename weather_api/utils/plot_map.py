@@ -1,5 +1,5 @@
-import pandas as pd
 import folium
+import pandas as pd
 from folium.plugins import MarkerCluster
 
 
@@ -42,5 +42,27 @@ def plot_weather_stations(meta: pd.DataFrame) -> folium.Map:
         """
         folium.Marker(
             location=[row["y"], row["x"]], popup=popup, icon=folium.Icon(icon="cloud")
+        ).add_to(marker_cluster)
+    return m
+
+
+def plot_hydrometric_stations(meta: pd.DataFrame) -> folium.Map:
+    """Maps out the input meta data for hydrometric stations.
+
+    Returns a folium map object with markers for each hydrometric station.
+    """
+    m = folium.Map(location=[60.5, -100.5], zoom_start=4)
+    marker_cluster = MarkerCluster().add_to(m)
+
+    for _, row in meta.iterrows():
+        popup = f"""
+        <div style="width: 200px; word-wrap: break-word;">
+            <b>{row['STATION_NAME']}</b><br>
+            Station number: {row['STATION_NUMBER']}<br>
+            Status: {row['STATUS_EN']}<br>
+        </div>
+        """
+        folium.Marker(
+            location=[row["y"], row["x"]], popup=popup, icon=folium.Icon(icon="tint")
         ).add_to(marker_cluster)
     return m
