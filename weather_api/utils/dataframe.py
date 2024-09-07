@@ -31,6 +31,8 @@ class WeatherStationsDataframe(DataFrameHandler):
             path, dtype=WeatherStationsDataTypes.dtypes, parse_dates=["LOCAL_DATE"]
         )
         df = df.set_index("LOCAL_DATE")
+        # Ensure the index is timezone-naive for xarray
+        df.index = df.index.tz_localize(None)
         return df
 
     def to_dict_frame(self) -> Dict[str, pd.DataFrame]:
@@ -62,6 +64,8 @@ class HydrometricStationsDataframe(DataFrameHandler):
             return None
         df = df.set_index(date_column)
         df.index.rename("DATE", inplace=True)
+        # Ensure the index is timezone-naive for xarray
+        df.index = df.index.tz_localize(None)
         return df
 
     def to_dict_frame(self) -> Dict[str, pd.DataFrame]:
