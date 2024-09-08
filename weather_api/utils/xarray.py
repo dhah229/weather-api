@@ -40,12 +40,11 @@ class WeatherStationsXArray(XArrayHandler):
     def __init__(self, dict_frame: Dict[str, pd.DataFrame]):
         self.dict_frame = dict_frame
 
-    def df_to_xr(self, df: pd.DataFrame) -> xr.Dataset:
+    def df_to_xr(self, df: pd.DataFrame, stn_id: str) -> xr.Dataset:
         x = _get_unique_rowval(df, "x")
         y = _get_unique_rowval(df, "y")
         station_name = _get_unique_rowval(df, "STATION_NAME")
         province_code = _get_unique_rowval(df, "PROVINCE_CODE")
-        climate_identifier = _get_unique_rowval(df, "CLIMATE_IDENTIFIER")
         columns = [
             "x",
             "y",
@@ -64,7 +63,7 @@ class WeatherStationsXArray(XArrayHandler):
         coords = {
             "x": x,
             "y": y,
-            "climate_identifier": climate_identifier,
+            "climate_identifier": stn_id,
             "station_name": station_name,
             "province_code": province_code,
         }
@@ -74,8 +73,8 @@ class WeatherStationsXArray(XArrayHandler):
 
     def to_xr(self) -> xr.Dataset:
         ds_list = []
-        for _, df in self.dict_frame.items():
-            ds = self.df_to_xr(df)
+        for stn_id, df in self.dict_frame.items():
+            ds = self.df_to_xr(df=df, stn_id=stn_id)
             ds_list.append(ds)
         ds = xr.concat(ds_list, dim="climate_identifier")
         return ds
@@ -99,11 +98,10 @@ class HydrometricStationsXArray(XArrayHandler):
             ds["LEVEL"].attrs["long_name"] = "River level"
         return ds
 
-    def df_to_xr(self, df: pd.DataFrame) -> xr.Dataset:
+    def df_to_xr(self, df: pd.DataFrame, stn_id: str) -> xr.Dataset:
         x = _get_unique_rowval(df, "x")
         y = _get_unique_rowval(df, "y")
         station_name = _get_unique_rowval(df, "STATION_NAME")
-        station_number = _get_unique_rowval(df, "STATION_NUMBER")
         province_code = _get_unique_rowval(df, "PROV_TERR_STATE_LOC")
         columns = [
             "x",
@@ -124,7 +122,7 @@ class HydrometricStationsXArray(XArrayHandler):
         coords = {
             "x": x,
             "y": y,
-            "station_number": station_number,
+            "station_number": stn_id,
             "station_name": station_name,
             "province_code": province_code,
         }
@@ -135,8 +133,8 @@ class HydrometricStationsXArray(XArrayHandler):
 
     def to_xr(self) -> xr.Dataset:
         ds_list = []
-        for _, df in self.dict_frame.items():
-            ds = self.df_to_xr(df)
+        for stn_id, df in self.dict_frame.items():
+            ds = self.df_to_xr(df=df, stn_id=stn_id)
             ds_list.append(ds)
         ds = xr.concat(ds_list, dim="station_number")
         return ds
