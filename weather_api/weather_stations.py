@@ -26,6 +26,8 @@ class WeatherStations(GeoMetAPI):
     bbox : Optional[list]
         The bounding box to retrieve data for (left, bottom, right, top).
         If `stn_id` is not specified, `bbox` must be specified.
+    hourly : bool
+        If True, retrieve the hourly-data. If False, retrieve daily data.
     """
 
     def __init__(
