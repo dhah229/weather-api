@@ -76,7 +76,10 @@ def test_hydrometric_realtime():
 
 def test_weather_hourly():
     wa = WeatherStations(
-        stn_id=weather_station, hourly=True, start_date=start_date, end_date=end_date
+        stn_id=weather_station,
+        hourly=True,
+        start_date=start_date,
+        end_date=end_date,
     )
     ds = wa.to_xr()
     assert isinstance(ds, xr.Dataset)
