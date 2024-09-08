@@ -112,5 +112,5 @@ class GeoMetAPI(ABC):
         """
         if meta is None:
             meta = self.get_metadata()
-        m = self.plotting_handler(meta)
+        m = self.plotting_handler.plot_stations(meta)
         return m

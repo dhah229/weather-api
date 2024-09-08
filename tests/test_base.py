@@ -1,5 +1,6 @@
 from datetime import datetime
 
+import folium
 import pandas as pd
 import xarray as xr
 
@@ -34,6 +35,12 @@ def xarray(accessor: GeoMetAPI, station: str):
     wa: GeoMetAPI = accessor(stn_id=station, start_date=start_date, end_date=end_date)
     ds = wa.to_xr()
     assert isinstance(ds, xr.Dataset)
+
+
+def plot_stations(accessor: GeoMetAPI, station: str):
+    wa: GeoMetAPI = accessor(stn_id=station)
+    m = wa.plot_stations()
+    assert isinstance(m, folium.Map)
 
 
 def test_weather_url():
@@ -83,3 +90,11 @@ def test_weather_hourly():
     )
     ds = wa.to_xr()
     assert isinstance(ds, xr.Dataset)
+
+
+def test_weather_plot_stations():
+    plot_stations(accessor=WeatherStations, station=weather_station)
+
+
+def test_hydrometric_plot_stations():
+    plot_stations(accessor=HydrometricStations, station=hydrometric_station)
