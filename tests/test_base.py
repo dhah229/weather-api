@@ -11,6 +11,7 @@ start_date = datetime(2020, 1, 1)
 end_date = datetime(2020, 3, 1)
 hydrometric_station = "02GA018"
 weather_station = "6158355"
+bbox = [-79.8, 43.63, -79.0, 43.9]
 
 
 def url(accessor: GeoMetAPI, station: str):
@@ -41,6 +42,12 @@ def plot_stations(accessor: GeoMetAPI, station: str):
     wa: GeoMetAPI = accessor(stn_id=station)
     m = wa.plot_stations()
     assert isinstance(m, folium.Map)
+
+
+def bbox_url(accessor: GeoMetAPI):
+    wa: GeoMetAPI = accessor(bbox=bbox)
+    urls = wa.url
+    assert isinstance(urls[0], str)
 
 
 def test_weather_url():
@@ -98,3 +105,11 @@ def test_weather_plot_stations():
 
 def test_hydrometric_plot_stations():
     plot_stations(accessor=HydrometricStations, station=hydrometric_station)
+
+
+def test_bbox_url_weather():
+    bbox_url(accessor=WeatherStations)
+
+
+def test_bbox_url_hydrometric():
+    bbox_url(accessor=HydrometricStations)
