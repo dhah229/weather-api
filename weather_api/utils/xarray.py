@@ -1,13 +1,27 @@
+from abc import ABC, abstractmethod
+from typing import Dict, List
+
 import pandas as pd
 import xarray as xr
-from typing import List, Dict
-from abc import ABC, abstractmethod
 
 # this script is used to handle the csv files that are downloaded from the weather api
 
 
 def _get_unique_rowval(df: pd.DataFrame, col: str) -> str:
-    return df[col].unique()[0]
+    if col in df.columns:
+        return df[col].unique()[0]
+    else:
+        return None
+
+
+def _candidate_columns_to_drop(df: pd.DataFrame, columns: List[str]) -> List[str]:
+    cols = [col for col in columns if col in df.columns]
+    return cols
+
+
+def _candidate_coords_to_assign(coords: dict) -> dict:
+    coordinates = {key: item for key, item in coords.items() if item is not None}
+    return coordinates
 
 
 class XArrayHandler(ABC):
@@ -32,30 +46,30 @@ class WeatherStationsXArray(XArrayHandler):
         station_name = _get_unique_rowval(df, "STATION_NAME")
         province_code = _get_unique_rowval(df, "PROVINCE_CODE")
         climate_identifier = _get_unique_rowval(df, "CLIMATE_IDENTIFIER")
-        df = df.drop(
-            columns=[
-                "x",
-                "y",
-                "STATION_NAME",
-                "CLIMATE_IDENTIFIER",
-                "ID",
-                "PROVINCE_CODE",
-                "LOCAL_YEAR",
-                "LOCAL_MONTH",
-                "LOCAL_DAY",
-            ]
-        )
+        columns = [
+            "x",
+            "y",
+            "STATION_NAME",
+            "CLIMATE_IDENTIFIER",
+            "ID",
+            "PROVINCE_CODE",
+            "LOCAL_YEAR",
+            "LOCAL_MONTH",
+            "LOCAL_DAY",
+        ]
+        columns = _candidate_columns_to_drop(df=df, columns=columns)
+        df = df.drop(columns=columns)
         ds = xr.Dataset.from_dataframe(df)
         ds = ds.rename({"LOCAL_DATE": "time"})
-        ds = ds.assign_coords(
-            {
-                "x": x,
-                "y": y,
-                "climate_identifier": climate_identifier,
-                "station_name": station_name,
-                "province_code": province_code,
-            }
-        )
+        coords = {
+            "x": x,
+            "y": y,
+            "climate_identifier": climate_identifier,
+            "station_name": station_name,
+            "province_code": province_code,
+        }
+        coords = _candidate_coords_to_assign(coords=coords)
+        ds = ds.assign_coords(coords=coords)
         return ds
 
     def to_xr(self) -> xr.Dataset:
@@ -71,39 +85,52 @@ class HydrometricStationsXArray(XArrayHandler):
     def __init__(self, dict_frame: Dict[str, pd.DataFrame]):
         self.dict_frame = dict_frame
 
+    @staticmethod
+    def _assign_units(ds: xr.Dataset) -> xr.Dataset:
+        if "DISCHARGE" in ds.data_vars:
+            ds["DISCHARGE"].attrs["units"] = "m3 s-1"
+            ds["DISCHARGE"].attrs[
+                "standard_name"
+            ] = "water_volume_transport_in_river_channel"
+            ds["DISCHARGE"].attrs["long_name"] = "River discharge"
+        if "LEVEL" in ds.data_vars:
+            ds["LEVEL"].attrs["units"] = "m"
+            ds["LEVEL"].attrs["standard_name"] = "water_level_in_river_channel"
+            ds["LEVEL"].attrs["long_name"] = "River level"
+        return ds
+
     def df_to_xr(self, df: pd.DataFrame) -> xr.Dataset:
         x = _get_unique_rowval(df, "x")
         y = _get_unique_rowval(df, "y")
         station_name = _get_unique_rowval(df, "STATION_NAME")
         station_number = _get_unique_rowval(df, "STATION_NUMBER")
         province_code = _get_unique_rowval(df, "PROV_TERR_STATE_LOC")
-        df = df.drop(
-            columns=[
-                "x",
-                "y",
-                "STATION_NAME",
-                "STATION_NUMBER",
-                "IDENTIFIER",
-                "PROV_TERR_STATE_LOC",
-                "DISCHARGE_SYMBOL_EN",
-                "DISCHARGE_SYMBOL_FR",
-                "LEVEL_SYMBOL_EN",
-                "LEVEL_SYMBOL_FR",
-            ]
-        )
+        columns = [
+            "x",
+            "y",
+            "STATION_NAME",
+            "STATION_NUMBER",
+            "IDENTIFIER",
+            "PROV_TERR_STATE_LOC",
+            "DISCHARGE_SYMBOL_EN",
+            "DISCHARGE_SYMBOL_FR",
+            "LEVEL_SYMBOL_EN",
+            "LEVEL_SYMBOL_FR",
+        ]
+        columns = _candidate_columns_to_drop(df=df, columns=columns)
+        df = df.drop(columns=columns)
         ds = xr.Dataset.from_dataframe(df)
         ds = ds.rename({"DATE": "time"})
-        ds = ds.assign_coords(
-            {
-                "x": x,
-                "y": y,
-                "station_number": station_number,
-                "station_name": station_name,
-                "province_code": province_code,
-            }
-        )
-        ds["DISCHARGE"].attrs["units"] = "m^3/s"
-        ds["LEVEL"].attrs["units"] = "m"
+        coords = {
+            "x": x,
+            "y": y,
+            "station_number": station_number,
+            "station_name": station_name,
+            "province_code": province_code,
+        }
+        coords = _candidate_coords_to_assign(coords=coords)
+        ds = ds.assign_coords(coords=coords)
+        ds = self._assign_units(ds=ds)
         return ds
 
     def to_xr(self) -> xr.Dataset:
