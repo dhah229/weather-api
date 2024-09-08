@@ -1,6 +1,6 @@
-from typing import Tuple
-from datetime import datetime
 import urllib.parse
+from datetime import datetime
+from typing import Tuple
 
 
 class UrlBuilder:
@@ -89,6 +89,14 @@ class UrlBuilder:
     @station_number.setter
     def station_number(self, value):
         self.params["STATION_NUMBER"] = value
+
+    @property
+    def properties(self):
+        return self.params.get("properties")
+
+    @properties.setter
+    def properties(self, value):
+        self.params["properties"] = ",".join([str(x) for x in value])
 
     def build(self) -> str:
         query_string = urllib.parse.urlencode(self.params)

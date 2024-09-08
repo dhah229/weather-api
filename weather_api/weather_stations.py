@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional, Union
+from typing import List, Optional, Union
 
 from .base import GeoMetAPI
 from .utils.handlers import WeatherStationsDataHandler
@@ -17,26 +17,29 @@ class WeatherStations(GeoMetAPI):
 
     Attributes
     ----------
-    stn_id : Union[str, list]
+    stn_id : Union[str, List[str]]
         The station number(s) to retrieve data for. If `bbox` is not specified, `stn_id` must be specified.
     start_date : Optional[datetime]
         The start date of the data to retrieve. If not specified, the default is 1840, 3, 1.
     end_date : Optional[datetime]
         The end date of the data to retrieve. If not specified, the default is the current date at midnight.
-    bbox : Optional[list]
+    bbox : Optional[List[float]]
         The bounding box to retrieve data for (left, bottom, right, top).
         If `stn_id` is not specified, `bbox` must be specified.
     hourly : bool
         If True, retrieve the hourly-data. If False, retrieve daily data.
+    vars : Optional[List[str]]
+        The variables to retrieve. If not specified, all variables are retrieved.
     """
 
     def __init__(
         self,
-        stn_id: Optional[Union[str, list]] = None,
+        stn_id: Optional[Union[str, List[str]]] = None,
         start_date: Optional[datetime] = None,
         end_date: Optional[datetime] = None,
-        bbox: Optional[list] = None,
+        bbox: Optional[List[float]] = None,
         hourly: bool = False,
+        vars: Optional[List[str]] = None,
     ):
         super().__init__(
             stn_id=stn_id,
@@ -44,5 +47,6 @@ class WeatherStations(GeoMetAPI):
             end_date=end_date,
             bbox=bbox,
             hourly=hourly,
+            vars=vars,
             data_handler=WeatherStationsDataHandler,
         )

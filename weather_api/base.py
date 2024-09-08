@@ -1,6 +1,6 @@
 from abc import ABC
 from datetime import datetime
-from typing import Dict, Optional, Union
+from typing import Dict, List, Optional, Union
 
 import folium
 import pandas as pd
@@ -24,13 +24,14 @@ class GeoMetAPI(ABC):
 
     def __init__(
         self,
-        stn_id: Union[str, list],
+        stn_id: Union[str, List[str]],
         start_date: Optional[datetime],
         end_date: Optional[datetime],
-        bbox: Optional[list],
+        bbox: Optional[List[float]],
         data_handler: DataHandler,
         realtime: bool = False,  # for HydrometricStations
         hourly: bool = False,  # for WeatherStations
+        vars: Optional[List[str]] = None,
     ):
         self.stn_id = stn_id
         self.bbox = bbox
@@ -46,6 +47,7 @@ class GeoMetAPI(ABC):
 
         self.realtime = realtime
         self.hourly = hourly
+        self.vars = vars
         self._initialize_url_handler(data_handler.url_handler)
         self.url = self.get_url()
         self.dataframe_handler = data_handler.dataframe_handler
@@ -60,6 +62,7 @@ class GeoMetAPI(ABC):
             "end_date": self.end_date,
             "stn_id": self.stn_id,
             "bbox": self.bbox,
+            "properties": self.vars,
         }
         if issubclass(url_handler, HydrometricStationsUrlHandler):
             kwargs["realtime"] = self.realtime
