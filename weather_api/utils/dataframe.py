@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Dict, List, Union
+from urllib.parse import parse_qs, urlparse
 
 import pandas as pd
 from pandas.errors import EmptyDataError
@@ -17,6 +18,13 @@ class DataFrameHandler(ABC):
     @abstractmethod
     def to_dict_frame(self) -> Dict[str, pd.DataFrame]:
         pass
+
+    def get_station_from_path(self, path: str, station_key: str) -> Union[str, None]:
+        """This method is used to get station from the URL"""
+        parsed_url = urlparse(path)
+        query_params = parse_qs(parsed_url.query)
+        station = query_params.get(station_key, [None])[0]
+        return station
 
 
 class WeatherStationsDataframe(DataFrameHandler):
@@ -41,7 +49,12 @@ class WeatherStationsDataframe(DataFrameHandler):
         dict_frame = {}
         for path in self.paths:
             df = self.to_df(path)
-            stn_id = df["CLIMATE_IDENTIFIER"].unique()[0]
+            stn_id = self.get_station_from_path(
+                path=path,
+                station_key="CLIMATE_IDENTIFIER",
+            )
+            if stn_id is None:
+                raise ValueError(f"Could not determine station name from {path}")
             dict_frame[str(stn_id)] = df
         return dict_frame
 
@@ -76,6 +89,11 @@ class HydrometricStationsDataframe(DataFrameHandler):
             df = self.to_df(path)
             if df is None:
                 continue
-            stn_id = df["STATION_NUMBER"].unique()[0]
+            stn_id = self.get_station_from_path(
+                path=path,
+                station_key="STATION_NUMBER",
+            )
+            if stn_id is None:
+                raise ValueError(f"Could not determine station name from {path}")
             dict_frame[str(stn_id)] = df
         return dict_frame
