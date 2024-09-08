@@ -29,7 +29,7 @@ class HydrometricStations(GeoMetAPI):
 
     def __init__(
         self,
-        stn_id: Union[str, list] = None,
+        stn_id: Optional[Union[str, list]] = None,
         start_date: Optional[datetime] = None,
         end_date: Optional[datetime] = None,
         bbox: Optional[list] = None,

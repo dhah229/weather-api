@@ -1,7 +1,7 @@
 class WeatherStationsDataTypes:
     """Used for handling weather station data to pandas dataframes."""
 
-    dtypes = {
+    dtypes_daily = {
         "x": "float32",
         "y": "float32",
         "STATION_NAME": "str",
@@ -37,6 +37,45 @@ class WeatherStationsDataTypes:
         "MIN_REL_HUMIDITY_FLAG": "category",
         "MAX_REL_HUMIDITY": "float32",
         "MAX_REL_HUMIDITY_FLAG": "category",
+    }
+
+    dtypes_hourly = {
+        "x": "float32",
+        "y": "float32",
+        "RELATIVE_HUMIDITY_FLAG": "category",
+        "WEATHER_ENG_DESC": "category",
+        "TEMP_FLAG": "category",
+        "TEMP": "float32",
+        "LOCAL_MONTH": "int8",
+        "STATION_NAME": "str",
+        "STATION_PRESSURE": "float32",
+        "CLIMATE_IDENTIFIER": "str",
+        "LOCAL_HOUR": "int8",
+        "VISIBILITY_FLAG": "category",
+        "WINDCHILL_FLAG": "category",
+        "UTC_DATE": "str",
+        "VISIBILITY": "float32",
+        "WIND_DIRECTION_FLAG": "category",
+        "UTC_YEAR": "int16",
+        "PRECIP_AMOUNT_FLAG": "category",
+        "PRECIP_AMOUNT": "float32",
+        "LOCAL_DAY": "int8",
+        "ID": "str",
+        "STATION_PRESSURE_FLAG": "category",
+        "WIND_SPEED_FLAG": "category",
+        "DEW_POINT_TEMP_FLAG": "category",
+        "PROVINCE_CODE": "str",
+        "RELATIVE_HUMIDITY": "float32",
+        "UTC_DAY": "int8",
+        "LOCAL_YEAR": "int16",
+        "UTC_MONTH": "int8",
+        "WINDCHILL": "float32",
+        "WIND_SPEED": "float32",
+        "HUMIDEX_FLAG": "category",
+        "WEATHER_FRE_DESC": "category",
+        "DEW_POINT_TEMP": "float32",
+        "HUMIDEX": "float32",
+        "WIND_DIRECTION": "float32",
     }
 
 

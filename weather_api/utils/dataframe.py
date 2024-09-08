@@ -22,14 +22,16 @@ class DataFrameHandler(ABC):
 class WeatherStationsDataframe(DataFrameHandler):
     """Class to read the weather station data from the Government of Canada's historical weather data API."""
 
-    def __init__(self, paths: List[str]):
+    def __init__(self, paths: List[str], hourly: bool = False):
         self.paths = paths
+        self.hourly = hourly
 
-    @staticmethod
-    def to_df(path: str) -> pd.DataFrame:
-        df = pd.read_csv(
-            path, dtype=WeatherStationsDataTypes.dtypes, parse_dates=["LOCAL_DATE"]
-        )
+    def to_df(self, path: str) -> pd.DataFrame:
+        if self.hourly:
+            dtypes = WeatherStationsDataTypes.dtypes_hourly
+        else:
+            dtypes = WeatherStationsDataTypes.dtypes_daily
+        df = pd.read_csv(path, dtype=dtypes, parse_dates=["LOCAL_DATE"])
         df = df.set_index("LOCAL_DATE")
         # Ensure the index is timezone-naive for xarray
         df.index = df.index.tz_localize(None)

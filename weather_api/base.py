@@ -6,9 +6,17 @@ import folium
 import pandas as pd
 import xarray as xr
 
-from .utils.dataframe import DataFrameHandler, HydrometricStationsDataframe
+from .utils.dataframe import (
+    DataFrameHandler,
+    HydrometricStationsDataframe,
+    WeatherStationsDataframe,
+)
 from .utils.handlers import DataHandler
-from .utils.url_handler import HydrometricStationsUrlHandler, UrlHandler
+from .utils.url_handler import (
+    HydrometricStationsUrlHandler,
+    UrlHandler,
+    WeatherStationsUrlHandler,
+)
 from .utils.xarray import XArrayHandler
 
 
@@ -22,6 +30,7 @@ class GeoMetAPI(ABC):
         bbox: Optional[list],
         data_handler: DataHandler,
         realtime: bool = False,  # for HydrometricStations
+        hourly: bool = False,  # for WeatherStations
     ):
         self.stn_id = stn_id
         self.bbox = bbox
@@ -36,6 +45,7 @@ class GeoMetAPI(ABC):
             self.end_date = end_date
 
         self.realtime = realtime
+        self.hourly = hourly
         self._initialize_url_handler(data_handler.url_handler)
         self.url = self.get_url()
         self.dataframe_handler = data_handler.dataframe_handler
@@ -53,6 +63,8 @@ class GeoMetAPI(ABC):
         }
         if issubclass(url_handler, HydrometricStationsUrlHandler):
             kwargs["realtime"] = self.realtime
+        if issubclass(url_handler, WeatherStationsUrlHandler):
+            kwargs["hourly"] = self.hourly
         self.url_handler: UrlHandler = url_handler(**kwargs)
 
     def get_url(self) -> str:
@@ -72,6 +84,8 @@ class GeoMetAPI(ABC):
         kwargs = {}
         if issubclass(self.dataframe_handler, HydrometricStationsDataframe):
             kwargs = {"realtime": self.realtime}
+        elif issubclass(self.dataframe_handler, WeatherStationsDataframe):
+            kwargs = {"hourly": self.hourly}
         data_handler: DataFrameHandler = self.dataframe_handler(self.url, **kwargs)
         self.dict_frame = data_handler.to_dict_frame()
         return self.dict_frame

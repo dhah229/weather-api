@@ -27,11 +27,13 @@ class WeatherStationsUrlHandler(UrlHandler):
         start_date: datetime,
         end_date: datetime,
         stn_id: Union[str, List[str]] = None,
+        hourly: bool = False,
         bbox: list = None,
     ):
         self.start_date = start_date
         self.end_date = end_date
         self.stn_id = stn_id
+        self.hourly = hourly
         self.bbox = bbox
 
     def get_metadata(self, stn_id: str = None) -> str:
@@ -53,12 +55,27 @@ class WeatherStationsUrlHandler(UrlHandler):
             urls.append(response_url)
         return urls
 
-    def get_url(self, stn_id: str = None) -> str:
+    def _url_hourly(self, stn_id: str = None) -> str:
+        builder = UrlBuilder("climate-hourly")
+        builder.date_range = (self.start_date, self.end_date)
+        builder.sortby = "PROVINCE_CODE,STN_ID,LOCAL_DATE"
+        builder.climate_identifier = stn_id
+        response_url = builder.build()
+        return response_url
+
+    def _url_daily(self, stn_id: str = None) -> str:
         builder = UrlBuilder("climate-daily")
         builder.date_range = (self.start_date, self.end_date)
         builder.sortby = "PROVINCE_CODE,STN_ID,LOCAL_DATE"
         builder.climate_identifier = stn_id
         response_url = builder.build()
+        return response_url
+
+    def get_url(self, stn_id: str = None) -> str:
+        if self.hourly:
+            response_url = self._url_hourly(stn_id)
+        else:
+            response_url = self._url_daily(stn_id)
         return response_url
 
     def build_url_metadata(self) -> List[str]:

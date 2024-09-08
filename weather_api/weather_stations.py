@@ -30,15 +30,17 @@ class WeatherStations(GeoMetAPI):
 
     def __init__(
         self,
-        stn_id: Union[str, list] = None,
+        stn_id: Optional[Union[str, list]] = None,
         start_date: Optional[datetime] = None,
         end_date: Optional[datetime] = None,
         bbox: Optional[list] = None,
+        hourly: bool = False,
     ):
         super().__init__(
             stn_id=stn_id,
             start_date=start_date,
             end_date=end_date,
             bbox=bbox,
+            hourly=hourly,
             data_handler=WeatherStationsDataHandler,
         )
