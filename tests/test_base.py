@@ -12,6 +12,8 @@ end_date = datetime(2020, 3, 1)
 hydrometric_station = "02GA018"
 weather_station = "6158355"
 bbox = [-79.8, 43.63, -79.0, 43.9]
+hydrometric_variables = ["DISCHARGE"]
+weather_variables = ["MEAN_TEMPERATURE"]
 
 
 def url(accessor: GeoMetAPI, station: str):
@@ -48,6 +50,14 @@ def bbox_url(accessor: GeoMetAPI):
     wa: GeoMetAPI = accessor(bbox=bbox)
     urls = wa.url
     assert isinstance(urls[0], str)
+
+
+def variables(accessor: GeoMetAPI, station: str, vars: list):
+    wa: GeoMetAPI = accessor(
+        stn_id=station, vars=vars, start_date=start_date, end_date=end_date
+    )
+    ds = wa.to_xr()
+    assert isinstance(ds, xr.Dataset)
 
 
 def test_weather_url():
@@ -113,3 +123,19 @@ def test_bbox_url_weather():
 
 def test_bbox_url_hydrometric():
     bbox_url(accessor=HydrometricStations)
+
+
+def test_variables_weather():
+    variables(
+        accessor=WeatherStations,
+        station=weather_station,
+        vars=weather_variables,
+    )
+
+
+def test_variables_hydrometric():
+    variables(
+        accessor=HydrometricStations,
+        station=hydrometric_station,
+        vars=hydrometric_variables,
+    )
