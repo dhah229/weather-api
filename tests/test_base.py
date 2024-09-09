@@ -12,8 +12,8 @@ end_date = datetime(2020, 3, 1)
 hydrometric_station = "02GA018"
 weather_station = "6158355"
 bbox = [-79.8, 43.63, -79.0, 43.9]
-hydrometric_variables = ["DISCHARGE"]
-weather_variables = ["MEAN_TEMPERATURE"]
+hydrometric_variables = "DISCHARGE"
+weather_variables = "MEAN_TEMPERATURE"
 
 
 def url(accessor: GeoMetAPI, station: str):
@@ -24,6 +24,9 @@ def url(accessor: GeoMetAPI, station: str):
 
 def metadata(accessor: GeoMetAPI, station: str):
     wa: GeoMetAPI = accessor(stn_id=station)
+    metadata = wa.get_metadata()
+    assert isinstance(metadata, pd.DataFrame)
+    wa: GeoMetAPI = accessor(stn_id=[station])
     metadata = wa.get_metadata()
     assert isinstance(metadata, pd.DataFrame)
 
@@ -52,7 +55,7 @@ def bbox_url(accessor: GeoMetAPI):
     assert isinstance(urls[0], str)
 
 
-def variables(accessor: GeoMetAPI, station: str, vars: list):
+def variables(accessor: GeoMetAPI, station: str, vars: str):
     wa: GeoMetAPI = accessor(
         stn_id=station, vars=vars, start_date=start_date, end_date=end_date
     )
@@ -139,3 +142,55 @@ def test_variables_hydrometric():
         station=hydrometric_station,
         vars=hydrometric_variables,
     )
+
+
+def test_variables_not_allowed_weather():
+    try:
+        variables(
+            accessor=WeatherStations,
+            station=weather_station,
+            vars="not_allowed",
+        )
+    except ValueError:
+        pass
+    else:
+        assert False, "Should have raised a ValueError"
+
+
+def test_variables_not_allowed_hydrometric():
+    try:
+        variables(
+            accessor=HydrometricStations,
+            station=hydrometric_station,
+            vars="not_allowed",
+        )
+    except ValueError:
+        pass
+    else:
+        assert False, "Should have raised a ValueError"
+
+
+def test_variables_not_allowed_weather_hourly():
+    try:
+        WeatherStations(
+            stn_id=weather_station,
+            hourly=True,
+            vars="not_allowed",
+        )
+    except ValueError:
+        pass
+    else:
+        assert False, "Should have raised a ValueError"
+
+
+def test_variables_not_allowed_hydrometric_realtime():
+    try:
+        HydrometricStations(
+            stn_id=hydrometric_station,
+            realtime=True,
+            vars="not_allowed",
+        )
+    except ValueError:
+        pass
+    else:
+        assert False, "Should have raised a ValueError"

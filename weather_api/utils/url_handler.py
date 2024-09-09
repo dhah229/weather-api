@@ -9,15 +9,15 @@ from .url_builder import UrlBuilder
 
 class UrlHandler(ABC):
     @abstractmethod
-    def get_url(self) -> str:
+    def get_url(self) -> str:  # pragma: no cover
         pass
 
     @abstractmethod
-    def build_url(self) -> List[str]:
+    def build_url(self) -> List[str]:  # pragma: no cover
         pass
 
     @abstractmethod
-    def build_url_metadata(self) -> List[str]:
+    def build_url_metadata(self) -> List[str]:  # pragma: no cover
         pass
 
 
