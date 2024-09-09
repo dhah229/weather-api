@@ -9,6 +9,8 @@ https://api.weather.gc.ca/
 https://api.weather.gc.ca/openapi?f=html
 https://climate.weather.gc.ca/historical_data/search_historic_data_e.html
 https://climatedata.ca/
+https://eccc-msc.github.io/open-data/msc-data/readme_en/
+https://eccc-msc.github.io/open-data/msc-geomet/ogc_api_en/
 """
 
 
