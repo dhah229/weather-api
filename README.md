@@ -54,7 +54,12 @@ The only difference is fetching different timescale data which will be explained
 Queries can be constrained by specifying the `start_date`/`end_date` and the variables of interest in the constructor:
 ```python
 from datetime import datetime
-wa = HydrometricStation(stn_id=stations, start_date=datetime(2021, 1, 1), end_date=datetime(2021, 12, 31), vars=["DISCHARGE", "LEVEL"])
+wa = HydrometricStation(
+    stn_id=stations, 
+    start_date=datetime(2021, 1, 1), 
+    end_date=datetime(2021, 12, 31), 
+    vars=["DISCHARGE", "LEVEL"],
+)
 ```
 If you require data at a different timescale, you can specify `hourly` for `WeatherStations` and `realtime` for `HydrometricStations` set to `True`. Note that the realtime data for `HydrometricStations` is only available for the last 30 days.
  
