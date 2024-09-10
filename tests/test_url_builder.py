@@ -39,5 +39,5 @@ def test_setter_getter():
     ub.station_number = "TEST1234"
     assert ub.station_number == "TEST1234"
 
-    ub.properties = "test"
-    assert ub.properties == "test"
+    ub.properties = ["DISCHARGE", "LEVEL"]
+    assert ub.properties == "DISCHARGE,LEVEL"
