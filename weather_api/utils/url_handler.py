@@ -278,6 +278,7 @@ class HydrometricStationsUrlHandler(UrlHandler):
     def _url_realtime(self, stn_id: str = None) -> str:
         builder = UrlBuilder("hydrometric-realtime")
         builder.station_number = stn_id
+        builder.sortby = "DATETIME"
         if self.properties is not None:
             if "DATETIME" not in self.properties:
                 # if we don't add this, we may not get any dates.
