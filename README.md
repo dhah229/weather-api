@@ -41,7 +41,7 @@ combined.plot()
 ```
 ![temperature](images/temperature.png)
 
-Note that both `WeatherStations` and `HydrometricStations` have the same API. For hydrometric stations, you can fetch data in the same way:
+Note that both `WeatherStations` and `HydrometricStations` have the same API. For hydrometric stations, you can fetch data using the same approach: 
 ```python
 stations = ['05MH001', '05MH006', '05MJ001']
 wa = HydrometricStations(stn_id=stations)
@@ -50,8 +50,7 @@ dcf = wa.to_dict_frame()
 # for an xarray
 ds = wa.to_xr()
 ```
-The only difference is fetching different timescale data which will be explained later.
-Queries can be constrained by specifying the `start_date`/`end_date` and the variables of interest in the constructor:
+The time period can be constrained by specifying the `start_date`/`end_date`. Furthermore, you can specify the variables of interest in the constructor:
 ```python
 from datetime import datetime
 wa = HydrometricStation(
@@ -61,9 +60,28 @@ wa = HydrometricStation(
     vars=["DISCHARGE", "LEVEL"],
 )
 ```
-If you require data at a different timescale, you can specify `hourly` for `WeatherStations` and `realtime` for `HydrometricStations` set to `True`. Note that the realtime data for `HydrometricStations` is only available for the last 30 days.
- 
+It is possible to extract near real-time hydrometric data by setting the `realtime=True` in the constructor (Note that real-time data is only available for the last 30 days). 
+For climate data, the `hourly=True` returns the hourly timescale data. For example:
+```python
+station = "02FE015"
+wa = HydrometricStation(
+    stn_id=station, 
+    realtime=True,
+)
+ds = wa.to_xr()
+ds["DISCHARGE"].plot()
+```
+![realtime](images/realtime.png)
 
+To see the endpoint that the api is trying to reach, use the `url` accessor:
+```python
+wa.url
+```
+which returns 
+```
+['https://api.weather.gc.ca/collections/hydrometric-realtime/items?f=csv&limit=1500000&startindex=0&STATION_NUMBER=02FE015&sortby=DATETIME']
+```
 
+To view the associated metadata for a chosen station(s), use the `get_metadata()` method (e.g., `wa.get_metadata()`) which returns a `pd.DataFrame`:
 
-
+![metadata](images/metadata.png)
