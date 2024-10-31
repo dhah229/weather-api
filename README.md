@@ -7,10 +7,17 @@
 This is a Python package that provides a convenient way to fetch weather  and hydrometric station data using the GeoMet OGC API. It simplifies the process of retrieving and parsing the data to `pandas` or `xarray` for  analysis.
 
 ## Installation
-Clone the library and run (editable)
+Install directly using github
 ```
-pip install -e .
+pip install git+https://github.com/dhah229/weather-api.git@main
 ```
+Or clone the repository and install it locally
+```
+git clone https://github.com/dhah229/weather-api.git
+cd weather-api
+pip install .
+```
+You can use the `-e` flag to install it in editable mode.
 
 ## Usage
 Here's a basic example to fetch `HydrometricStations` and `WeatherStations` data. First, if you need to determine which stations you need, you can use the `plot_stations()` method to visualize the stations on a map:
