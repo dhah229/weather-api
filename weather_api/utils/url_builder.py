@@ -11,7 +11,6 @@ class UrlBuilder:
         self.params = {
             "f": "csv",
             "limit": "1500000",
-            "startindex": "0",
         }
 
     @property
