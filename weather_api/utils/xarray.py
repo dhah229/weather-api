@@ -69,6 +69,32 @@ class WeatherStationsXArray(XArrayHandler):
         }
         coords = _candidate_coords_to_assign(coords=coords)
         ds = ds.assign_coords(coords=coords)
+        ds = self._assign_units(ds)
+        return ds
+    @staticmethod
+    def _assign_units(ds: xr.Dataset) -> xr.Dataset:
+        # Assign units to common weather variables based on GeoMET API documentation
+        units_map = {
+            "MEAN_TEMPERATURE": "degC",
+            "MAX_TEMPERATURE": "degC",
+            "MIN_TEMPERATURE": "degC",
+            "TOTAL_PRECIPITATION": "mm",
+            "SNOW_ON_GROUND": "cm",
+            "DIRECTION_OF_MAX_GUST": "deg",
+            "SPEED_OF_MAX_GUST": "km/h",
+            "HEATING_DEGREE_DAYS": "degC",
+            "COOLING_DEGREE_DAYS": "degC",
+            "MEAN_WIND_SPEED": "km/h",
+            "MAX_REL_HUMIDITY": "%",
+            "MIN_REL_HUMIDITY": "%",
+            "MEAN_REL_HUMIDITY": "%",
+            "MEAN_PRESSURE": "kPa",
+            "MAX_PRESSURE": "kPa",
+            "MIN_PRESSURE": "kPa",
+        }
+        for var, unit in units_map.items():
+            if var in ds.data_vars:
+                ds[var].attrs["units"] = unit
         return ds
 
     def to_xr(self) -> xr.Dataset:
