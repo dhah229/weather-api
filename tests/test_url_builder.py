@@ -30,6 +30,10 @@ def test_setter_getter():
     ub.startindex = 10
     assert ub.startindex == 10
 
+    ub.offset = 20
+    assert ub.offset == 20
+    assert ub.startindex == 20
+
     ub.bbox = [1, 1, 1, 1]
     assert ub.bbox == "1,1,1,1"
 

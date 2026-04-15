@@ -104,6 +104,8 @@ class WeatherStationsXArray(XArrayHandler):
                 df[col] = df[col].to_numpy()
             ds = self.df_to_xr(df=df, stn_id=stn_id)
             ds_list.append(ds)
+        if not ds_list:
+            return xr.Dataset()
         ds = xr.concat(ds_list, dim="climate_identifier")
         return ds
 
@@ -166,5 +168,7 @@ class HydrometricStationsXArray(XArrayHandler):
                 df[col] = df[col].to_numpy()
             ds = self.df_to_xr(df=df, stn_id=stn_id)
             ds_list.append(ds)
+        if not ds_list:
+            return xr.Dataset()
         ds = xr.concat(ds_list, dim="station_number")
         return ds

@@ -6,11 +6,13 @@ from typing import Tuple
 class UrlBuilder:
     """Class to build the url for the Government of Canada's weather data API."""
 
+    MAX_LIMIT = 10000
+
     def __init__(self, route: str):
         self.url = f"https://api.weather.gc.ca/collections/{route}/items"
         self.params = {
             "f": "csv",
-            "limit": "1500000",
+            "limit": str(self.MAX_LIMIT),
         }
 
     @property
@@ -59,11 +61,19 @@ class UrlBuilder:
 
     @property
     def startindex(self):
-        return self.params.get("startindex")
+        return self.params.get("offset")
 
     @startindex.setter
     def startindex(self, value):
-        self.params["startindex"] = value
+        self.params["offset"] = value
+
+    @property
+    def offset(self):
+        return self.params.get("offset")
+
+    @offset.setter
+    def offset(self, value):
+        self.params["offset"] = value
 
     @property
     def bbox(self):

@@ -97,6 +97,8 @@ class GeoMetAPI(ABC):
         """Retrieve the data to an xarray dataset."""
         if self.dict_frame is None:
             self.dict_frame = self.to_dict_frame()
+        if not self.dict_frame:
+            return xr.Dataset()
         data_handler: XArrayHandler = self.xarray_handler(self.dict_frame)
         ds = data_handler.to_xr()
         return ds
